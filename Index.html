@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f172a">
+<title>Expense Tracker</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --input: #0f172a;
+    --green: #10b981;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --border: #334155;
+    --red: #fb7185;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    padding: 24px 16px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  header {
+    margin-bottom: 24px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .brand-icon {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+    background: rgba(16, 185, 129, .15);
+    color: var(--green);
+    font-size: 23px;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 25px;
+    letter-spacing: -.8px;
+  }
+
+  header p {
+    margin: 8px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .balance-card {
+    padding: 24px;
+    margin-bottom: 22px;
+    border: 1px solid rgba(16, 185, 129, .25);
+    border-radius: 20px;
+    background: linear-gradient(135deg, #064e3b, #1e293b 85%);
+  }
+
+  .balance-label {
+    color: #a7f3d0;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .balance {
+    margin: 10px 0;
+    font-size: clamp(30px, 8vw, 42px);
+    font-weight: 750;
+    letter-spacing: -1.5px;
+    overflow-wrap: anywhere;
+  }
+
+  .balance-note {
+    color: #cbd5e1;
+    font-size: 12px;
+  }
+
+  .section {
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    background: var(--card);
+  }
+
+  .section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 17px;
+  }
+
+  .field {
+    margin-bottom: 15px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 7px;
+    color: #cbd5e1;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  input, select {
+    width: 100%;
+    min-height: 48px;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    outline: none;
+    background: var(--input);
+    color: var(--text);
+    font: inherit;
+    font-size: 14px;
+  }
+
+  input:focus, select:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, .12);
+  }
+
+  button {
+    min-height: 44px;
+    padding: 11px 15px;
+    border: 0;
+    border-radius: 10px;
+    cursor: pointer;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 650;
+    transition: opacity .2s, transform .2s;
+  }
+
+  button:active {
+    transform: scale(.98);
+  }
+
+  button:focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 3px;
+  }
+
+  .add-btn {
+    width: 100%;
+    background: var(--green);
+    color: #052e25;
+  }
+
+  .add-btn:hover {
+    opacity: .9;
+  }
+
+  .count {
+    padding: 5px 9px;
+    border-radius: 20px;
+    background: #334155;
+    color: #cbd5e1;
+    font-size: 12px;
+  }
+
+  .transaction {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .transaction:last-child {
+    border-bottom: none;
+  }
+
+  .transaction-icon {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 43px;
+    height: 43px;
+    border-radius: 13px;
+    background: #334155;
+    font-size: 19px;
+  }
+
+  .transaction-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .transaction-title {
+    overflow-wrap: anywhere;
+    font-size: 14px;
+    font-weight: 650;
+  }
+
+  .transaction-meta {
+    margin-top: 5px;
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  .transaction-right {
+    display: flex;
+    align-items: flex-end;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .amount {
+    white-space: nowrap;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .delete-btn {
+    min-height: 30px;
+    padding: 5px 8px;
+    background: rgba(251, 113, 133, .1);
+    color: var(--red);
+    font-size: 11px;
+  }
+
+  .empty {
+    padding: 28px 10px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .empty-icon {
+    margin-bottom: 10px;
+    font-size: 32px;
+  }
+
+  .footer {
+    padding: 8px 0;
+    text-align: center;
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  .notice {
+    margin-bottom: 14px;
+    color: var(--red);
+    font-size: 12px;
+  }
+
+  @media (max-width: 360px) {
+    body {
+      padding: 18px 10px;
+    }
+
+    .section {
+      padding: 15px;
+    }
+
+    .balance-card {
+      padding: 19px;
+    }
+
+    .transaction {
+      gap: 8px;
+    }
+
+    .transaction-icon {
+      width: 36px;
+      height: 36px;
+    }
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <header>
+    <div class="brand">
+      <div class="brand-icon" aria-hidden="true">↗</div>
+      <h1>Expense Tracker</h1>
+    </div>
+    <p>Know where your money goes. Stay in control.</p>
+  </header>
+
+  <section class="balance-card" aria-label="Expense summary">
+    <div class="balance-label">Total Expenses</div>
+    <div class="balance" id="balance" aria-live="polite">₦0.00</div>
+    <div class="balance-note">Your recorded spending across all transactions</div>
+  </section>
+
+  <section class="section">
+    <div class="section-heading">
+      <h2>Add Transaction</h2>
+    </div>
+
+    <form id="expenseForm">
+      <div class="field">
+        <label for="description">Transaction Description</label>
+        <input
+          id="description"
+          name="description"
+          type="text"
+          maxlength="100"
+          placeholder="e.g. Lunch, fuel, electricity"
+          autocomplete="off"
+          required
+        >
+      </div>
+
+      <div class="field">
+        <label for="amount">Amount (₦)</label>
+        <input
+          id="amount"
+          name="amount"
+          type="number"
+          min="0.01"
+          max="1000000000000"
+          step="0.01"
+          inputmode="decimal"
+          placeholder="0.00"
+          required
+        >
+      </div>
+
+      <div class="field">
+        <label for="category">Category</label>
+        <select id="category" name="category" required>
+          <option value="Food">🍔 Food</option>
+          <option value="Transport">🚗 Transport</option>
+          <option value="Bills">💡 Bills</option>
+          <option value="Misc">📦 Misc</option>
+        </select>
+      </div>
+
+      <p class="notice" id="notice" role="alert" hidden></p>
+      <button class="add-btn" type="submit">+ Add Expense</button>
+    </form>
+  </section>
+
+  <section class="section">
+    <div class="section-heading">
+      <h2>Recent Transactions</h2>
+      <span class="count" id="count">0 records</span>
+    </div>
+    <div id="transactions" aria-live="polite">
+      <div class="empty">
+        <div class="empty-icon">🧾</div>
+        No expenses yet. Add your first transaction!
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">
+    Your data stays in this browser on this device.
+  </div>
+</main>
+
+<script>
+(() => {
+  "use strict";
+
+  const STORAGE_KEY = "personal-expense-tracker-v1";
+
+  const form = document.getElementById("expenseForm");
+  const descriptionInput = document.getElementById("description");
+  const amountInput = document.getElementById("amount");
+  const categoryInput = document.getElementById("category");
+  const balanceElement = document.getElementById("balance");
+  const countElement = document.getElementById("count");
+  const transactionsElement = document.getElementById("transactions");
+  const noticeElement = document.getElementById("notice");
+
+  const categories = {
+    Food: "🍔",
+    Transport: "🚗",
+    Bills: "💡",
+    Misc: "📦"
+  };
+
+  const currency = new Intl.NumberFormat("en-NG", {
+    style: "currency",
+    currency: "NGN",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+
+  let transactions = [];
+  let storageAvailable = true;
+
+  function showNotice(message) {
+    noticeElement.textContent = message;
+    noticeElement.hidden = !message;
+  }
+
+  function loadTransactions() {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+
+      if (saved === null) return [];
+
+      const parsed = JSON.parse(saved);
+
+      if (!Array.isArray(parsed)) {
+        throw new Error("Invalid saved data");
+      }
+
+      return parsed.filter(item =>
+        item &&
+        typeof item.id === "string" &&
+        typeof item.description === "string" &&
+        item.description.length <= 100 &&
+        Number.isFinite(item.amount) &&
+        item.amount > 0 &&
+        item.amount <= 1000000000000 &&
+        Object.prototype.hasOwnProperty.call(categories, item.category) &&
+        typeof item.date === "string"
+      );
+    } catch {
+      storageAvailable = false;
+      showNotice(
+        "Saved data could not be loaded. Browser storage may be unavailable or corrupted."
+      );
+      return [];
+    }
+  }
+
+  function saveTransactions() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions));
+      storageAvailable = true;
+      return true;
+    } catch {
+      storageAvailable = false;
+      showNotice(
+        "Could not save changes. Check your browser storage settings. Changes may be lost."
+      );
+      return false;
+    }
+  }
+
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+
+    if (Number.isNaN(date.getTime())) return "Date unavailable";
+
+    return new Intl.DateTimeFormat("en-NG", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    }).format(date);
+  }
+
+  function render() {
+    const total = transactions.reduce(
+      (sum, transaction) => sum + transaction.amount,
+      0
+    );
+
+    balanceElement.textContent = currency.format(total);
+    countElement.textContent =
+      `${transactions.length} ${transactions.length === 1 ? "record" : "records"}`;
+
+    transactionsElement.replaceChildren();
+
+    if (transactions.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "empty";
+
+      const icon = document.createElement("div");
+      icon.className = "empty-icon";
+      icon.textContent = "🧾";
+
+      const message = document.createElement("div");
+      message.textContent = "No expenses yet. Add your first transaction!";
+
+      empty.append(icon, message);
+      transactionsElement.appendChild(empty);
+      return;
+    }
+
+    for (const transaction of transactions) {
+      const row = document.createElement("article");
+      row.className = "transaction";
+
+      const icon = document.createElement("div");
+      icon.className = "transaction-icon";
+      icon.setAttribute("aria-hidden", "true");
+      icon.textContent = categories[transaction.category];
+
+      const info = document.createElement("div");
+      info.className = "transaction-info";
+
+      const title = document.createElement("div");
+      title.className = "transaction-title";
+      title.textContent = transaction.description;
+
+      const meta = document.createElement("div");
+      meta.className = "transaction-meta";
+      meta.textContent =
+        `${transaction.category} · ${formatDate(transaction.date)}`;
+
+      info.append(title, meta);
+
+      const right = document.createElement("div");
+      right.className = "transaction-right";
+
+      const amount = document.createElement("div");
+      amount.className = "amount";
+      amount.textContent = `−${currency.format(transaction.amount)}`;
+
+      const deleteButton = document.createElement("button");
+      deleteButton.className = "delete-btn";
+      deleteButton.type = "button";
+      deleteButton.textContent = "Delete";
+      deleteButton.setAttribute(
+        "aria-label",
+        `Delete expense: ${transaction.description}`
+      );
+
+      deleteButton.addEventListener("click", () => {
+        const previous = transactions;
+        transactions = transactions.filter(item => item.id !== transaction.id);
+
+        if (!saveTransactions()) {
+          transactions = previous;
+          render();
+          return;
+        }
+
+        showNotice("");
+        render();
+      });
+
+      right.append(amount, deleteButton);
+      row.append(icon, info, right);
+      transactionsElement.appendChild(row);
+    }
+  }
+
+  form.addEventListener("submit", event => {
+    event.preventDefault();
+    showNotice("");
+
+    const description = descriptionInput.value.trim();
+    const amount = Number(amountInput.value);
+    const category = categoryInput.value;
+
+    if (!description) {
+      showNotice("Please enter a transaction description.");
+      descriptionInput.focus();
+      return;
+    }
+
+    if (
+      !Number.isFinite(amount) ||
+      amount <= 0 ||
+      amount > 1000000000000
+    ) {
+      showNotice("Enter a valid amount greater than zero.");
+      amountInput.focus();
+      return;
+    }
+
+    if (!Object.prototype.hasOwnProperty.call(categories, category)) {
+      showNotice("Please select a valid category.");
+      return;
+    }
+
+    const transaction = {
+      id: (
+        typeof crypto !== "undefined" &&
+        typeof crypto.randomUUID === "function"
+      ) ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
+      description,
+      amount,
+      category,
+      date: new Date().toISOString()
+    };
+
+    const previous = transactions;
+    transactions = [transaction, ...transactions];
+
+    if (!saveTransactions()) {
+      transactions = previous;
+      render();
+      return;
+    }
+
+    form.reset();
+    categoryInput.value = "Food";
+    render();
+    descriptionInput.focus();
+  });
+
+  transactions = loadTransactions();
+  render();
+
+  if (!storageAvailable) {
+    // The warning is displayed by loadTransactions().
+  }
+})();
+</script>
+</body>
+</html>
